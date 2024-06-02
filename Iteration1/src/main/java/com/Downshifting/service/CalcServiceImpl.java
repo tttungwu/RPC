@@ -11,3 +11,4 @@ public class CalcServiceImpl implements CalcService{
         return a * b;
     }
 }
+
