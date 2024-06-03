@@ -2,6 +2,7 @@ package com.Downshifting.proxy.cgclib;
 
 import com.Downshifting.Register.RegistryFactory;
 import com.Downshifting.common.RPC.*;
+import com.Downshifting.common.annotation.RpcReference;
 import com.Downshifting.common.constants.MsgType;
 import com.Downshifting.common.constants.ProtocolConstants;
 import com.Downshifting.common.constants.RegisterType;
@@ -22,12 +23,23 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class CgLibProxy implements MethodInterceptor {
-    private final Object object;
 
     private final Random random = new Random();
 
-    public CgLibProxy(Object o){
-        this.object = o;
+    private final String serviceName;
+
+    private final String version;
+
+    private final long time;
+
+    private final TimeUnit timeUnit;
+
+    public CgLibProxy(Class clazz){
+        this.serviceName = clazz.getName();
+        final RpcReference rpcService = (RpcReference) clazz.getAnnotation(RpcReference.class);
+        version = rpcService.version();
+        time = rpcService.time();
+        timeUnit = rpcService.timeUnit();
     }
 
     // 构建请求头
@@ -47,7 +59,7 @@ public class CgLibProxy implements MethodInterceptor {
     private RpcRequest buildRpcRequest(Method method, Object[] objects) {
         RpcRequest rpcRequest = new RpcRequest();
 
-        rpcRequest.setClassName(object.getClass().getName());
+        rpcRequest.setClassName(method.getDeclaringClass().getName());
         rpcRequest.setMethodCode(method.hashCode());
         rpcRequest.setMethodName(method.getName());
         rpcRequest.setServiceVersion("1.0");
@@ -74,7 +86,7 @@ public class CgLibProxy implements MethodInterceptor {
         final RpcRequest rpcRequest = buildRpcRequest(method, objects);
         rpcProtocol.setBody(rpcRequest);
 
-        final List<Endpoint> endpoints = RegistryFactory.get(RegisterType.ZOOKEEPER).discovery(new Service(o.getClass().getName(), "1.0"));
+        final List<Endpoint> endpoints = RegistryFactory.get(RegisterType.ZOOKEEPER).discovery(new Service(serviceName, version));
         if (endpoints.isEmpty()){
             throw new Exception("No service is available");
         }

@@ -8,6 +8,7 @@ import com.Downshifting.common.annotation.RpcService;
 import com.Downshifting.common.constants.RegisterType;
 import com.Downshifting.common.utils.Endpoint;
 import com.Downshifting.common.utils.EndpointService;
+import com.Downshifting.common.utils.ServerCache;
 import com.Downshifting.common.utils.Service;
 import com.Downshifting.service.CalcServiceImpl;
 import com.Downshifting.service.CalcServiceImpl2;
@@ -82,6 +83,8 @@ public class Server2 {
         endpointService.setService(service);
         final RegistryService registryService = RegistryFactory.get(RegisterType.ZOOKEEPER);
         registryService.register(endpointService);
+        final String key = String.join("$", serviceName, annotation.version());
+        ServerCache.SERVICE_MAP.put(key, clazz.newInstance());
     }
 
     public static void main(String[] args) throws Exception {

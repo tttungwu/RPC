@@ -1,6 +1,8 @@
 package com.Downshifting.invoke;
 
 import com.Downshifting.common.RPC.RpcRequest;
+import com.Downshifting.common.utils.ServerCache;
+import com.Downshifting.comms.server.Server;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -15,17 +17,25 @@ public class JdkInvoker implements Invoker{
     public Object invoke(RpcRequest rpcRequest) throws InvocationTargetException, IllegalAccessException, ClassNotFoundException, NoSuchMethodException, InstantiationException {
         final Integer methodCode = rpcRequest.getMethodCode();
 
-        // 使用computeIfAbsent来简化懒加载逻辑
-        MethodInvocation methodInvocation = methodCache.computeIfAbsent(methodCode, code -> {
+        // 检查缓存中是否已存在该方法的调用信息
+        methodCache.computeIfAbsent(methodCode, code -> {
             try {
-                final Class<?> objClass = Class.forName(rpcRequest.getClassName());
-                final Method method = objClass.getMethod(rpcRequest.getMethodName(), rpcRequest.getParameterTypes());
-                return new MethodInvocation(objClass.getDeclaredConstructor().newInstance(), method);
+                // 构建服务键
+                final String key = String.join("$", rpcRequest.getClassName(), rpcRequest.getServiceVersion());
+                // 从缓存中获取服务实例
+                Object bean = ServerCache.SERVICE_MAP.get(key);
+                final Class<?> aClass = bean.getClass();
+
+                // 获取方法
+                final Method method = aClass.getMethod(rpcRequest.getMethodName(), rpcRequest.getParameterTypes());
+                return new MethodInvocation(bean, method);
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException("Failed to cache method invocation", e);
             }
         });
 
+        // 从缓存中获取方法调用信息并执行
+        final MethodInvocation methodInvocation = methodCache.get(methodCode);
         return methodInvocation.invoke(rpcRequest.getParameters());
     }
 }

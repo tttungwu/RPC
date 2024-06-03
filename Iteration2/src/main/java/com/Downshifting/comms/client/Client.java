@@ -30,11 +30,7 @@ public class Client {
 
     private ChannelFuture channelFuture;
 
-    private Endpoint server;
-
-    public Client(Endpoint server) throws InterruptedException {
-        this.server = server;
-
+    public Client() throws InterruptedException {
         bootstrap = new Bootstrap();
         eventLoopGroup = new NioEventLoopGroup(4);
         bootstrap.group(eventLoopGroup).channel(NioSocketChannel.class)
@@ -62,15 +58,18 @@ public class Client {
             }
         }
     }
-    
+
     public static void main(String[] args) throws Exception {
-        final Client client = new Client(new Endpoint("127.0.0.1", 8084));
+        final Client client = new Client();
         final RegistryService registryService = RegistryFactory.get(RegisterType.ZOOKEEPER);
         final Service service = new Service(CalcService.class.getName(), "1.0");
         registryService.subscribe(service);
         client.connectServer();
         final Proxy iproxy = ProxyFactory.getProxy(RpcProxyType.CG_LIB);
         final CalcService proxy = iproxy.getProxy(CalcService.class);
-        System.out.println(proxy.calc2(3, 4));
+        while (true) {
+            System.out.println(proxy.calc2(3, 4));
+            Thread.sleep(1000);
+        }
     }
 }
