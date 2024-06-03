@@ -14,18 +14,12 @@ public class JdkInvoker implements Invoker{
     @Override
     public Object invoke(RpcRequest rpcRequest) throws InvocationTargetException, IllegalAccessException, ClassNotFoundException, NoSuchMethodException, InstantiationException {
         final Integer methodCode = rpcRequest.getMethodCode();
-
-        // 使用computeIfAbsent来简化懒加载逻辑
-        MethodInvocation methodInvocation = methodCache.computeIfAbsent(methodCode, code -> {
-            try {
-                final Class<?> objClass = Class.forName(rpcRequest.getClassName());
-                final Method method = objClass.getMethod(rpcRequest.getMethodName(), rpcRequest.getParameterTypes());
-                return new MethodInvocation(objClass.getDeclaredConstructor().newInstance(), method);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        });
-
+        if (!methodCache.containsKey(methodCode)) {
+            final Class<?> objClass = Class.forName(rpcRequest.getClassName());
+            final Method method = objClass.getMethod(rpcRequest.getMethodName(), rpcRequest.getParameterTypes());
+            methodCache.put(methodCode,new MethodInvocation(objClass.newInstance(), method));
+        }
+        final MethodInvocation methodInvocation = methodCache.get(methodCode);
         return methodInvocation.invoke(rpcRequest.getParameter());
     }
 }

@@ -6,7 +6,7 @@ import com.Downshifting.common.constant.MsgType;
 import com.Downshifting.common.constant.ProtocolConstants;
 import com.Downshifting.common.constant.RpcSerializationType;
 import com.Downshifting.common.utils.Endpoint;
-import com.Downshifting.service.CalcService;
+import com.Downshifting.service.CalcServiceImpl;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -65,7 +65,7 @@ public class Client {
         rpcProtocol.setHeader(header);
         // 构建消息体
         final RpcRequest rpcRequest = new RpcRequest();
-        final Class<CalcService> objClass = CalcService.class;
+        final Class<CalcServiceImpl> objClass = CalcServiceImpl.class;
         rpcRequest.setClassName(objClass.getName());
         final Method method = objClass.getMethod("calc1", Integer.class, Integer.class);
         rpcRequest.setMethodCode(method.hashCode());

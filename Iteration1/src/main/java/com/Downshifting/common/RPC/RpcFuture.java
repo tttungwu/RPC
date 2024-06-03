@@ -8,6 +8,9 @@ public class RpcFuture <T> {
     // 异步操作的超时时间
     private Long timeout;
 
+    public RpcFuture() {
+    }
+
     public RpcFuture(Promise<T> promise, Long timeout) {
         this.promise = promise;
         this.timeout = timeout;
