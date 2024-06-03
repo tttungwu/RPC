@@ -11,7 +11,7 @@ import io.netty.util.concurrent.DefaultPromise;
 import com.Downshifting.service.HelloService;
 import com.Downshifting.common.constants.MsgType;
 import com.Downshifting.common.constants.ProtocolConstants;
-import com.Downshifting.common.constants.RpcSerialization;
+import com.Downshifting.common.constants.RpcSerializationType;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
@@ -63,7 +63,7 @@ public class Client {
         header.setRequestId(requestId);
 
 
-        final byte[] serialization = RpcSerialization.JSON.name.getBytes();
+        final byte[] serialization = RpcSerializationType.JSON.name.getBytes();
         header.setSerializationLen(serialization.length);
         header.setSerialization(serialization);
         header.setMsgType((byte) MsgType.REQUEST.ordinal());

@@ -1,5 +1,6 @@
 package com.Downshifting.common.RPC;
 
+import com.Downshifting.common.constants.RpcSerializationType;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
@@ -45,7 +46,7 @@ public class RpcDecoder extends ByteToMessageDecoder {
         byte[] data = new byte[dataLength];
         in.readBytes(data);
 
-        MsgType msgTypeEnum = MsgType.findByType(msgType);
+        MsgType msgTypeEnum = MsgType.fromOrdinal(msgType);
         if (msgTypeEnum == null) {
             return;
         }
@@ -60,7 +61,7 @@ public class RpcDecoder extends ByteToMessageDecoder {
         header.setSerialization(bytes);
         header.setSerializationLen(len);
         header.setMsgLen(dataLength);
-        RpcSerialization rpcSerialization = SerializationFactory.get(com.Downshifting.common.constants.RpcSerialization.get(serialization));
+        RpcSerialization rpcSerialization = SerializationFactory.get(RpcSerializationType.get(serialization));
         RpcProtocol protocol = new RpcProtocol();
         protocol.setHeader(header);
         switch (msgTypeEnum) {

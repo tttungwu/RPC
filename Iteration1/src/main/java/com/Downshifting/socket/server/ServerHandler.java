@@ -7,7 +7,7 @@ import com.Downshifting.common.RPC.RpcResponse;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import com.Downshifting.common.constants.MsgType;
-import com.Downshifting.common.constants.RpcInvoker;
+import com.Downshifting.common.constants.RpcInvokerType;
 import com.Downshifting.invoke.Invocation;
 import com.Downshifting.invoke.Invoker;
 import com.Downshifting.invoke.InvokerFactory;
@@ -24,7 +24,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<RpcProtocol<RpcRe
         final ProtoHeader header = rpcProtocol.getHeader();
         header.setMsgType((byte) MsgType.RESPONSE.ordinal());
         resRpcProtocol.setHeader(header);
-        final Invoker invoker = InvokerFactory.get(RpcInvoker.JDK);
+        final Invoker invoker = InvokerFactory.get(RpcInvokerType.JDK);
         try {
             final Object data = invoker.invoke(new Invocation(rpcRequest));
             response.setData(data);

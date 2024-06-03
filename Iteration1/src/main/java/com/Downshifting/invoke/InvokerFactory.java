@@ -1,6 +1,6 @@
 package com.Downshifting.invoke;
 
-import com.Downshifting.common.constants.RpcInvoker;
+import com.Downshifting.common.constants.RpcInvokerType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -8,13 +8,13 @@ import java.util.Map;
 
 public class InvokerFactory {
 
-    public static Map<RpcInvoker,Invoker> invokerInvokerMap = new HashMap();
+    public static Map<RpcInvokerType,Invoker> invokerInvokerMap = new HashMap();
 
     static {
-        invokerInvokerMap.put(RpcInvoker.JDK,new JdkReflectionInvoker());
+        invokerInvokerMap.put(RpcInvokerType.JDK,new JdkReflectionInvoker());
     }
 
-    public static Invoker get(RpcInvoker rpcInvoker){
+    public static Invoker get(RpcInvokerType rpcInvoker){
         return invokerInvokerMap.get(rpcInvoker);
     }
 }
