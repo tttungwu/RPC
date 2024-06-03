@@ -63,9 +63,7 @@ public class Client {
         header.setRequestId(requestId);
 
 
-        final byte[] serialization = RpcSerializationType.JSON.name.getBytes();
-        header.setSerializationLen(serialization.length);
-        header.setSerialization(serialization);
+        header.setSerializationType((byte) RpcSerializationType.JSON.ordinal());
         header.setMsgType((byte) MsgType.REQUEST.ordinal());
         header.setStatus((byte) 0x1);
         rpcProtocol.setHeader(header);

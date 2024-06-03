@@ -2,20 +2,14 @@ package com.Downshifting.common.constants;
 
 
 public enum RpcSerializationType {
-    JSON("json"),
-    JDK("jdk");
+    JSON;
 
-    public String name;
-    RpcSerializationType(String type){
-        this.name = type;
-    }
-
-    public static RpcSerializationType get(String type){
-        for (RpcSerializationType value : values()) {
-            if (value.name.equals(type)) {
-                return value;
+    public static RpcSerializationType fromOrdinal(int ordinal) {
+        for (RpcSerializationType type : RpcSerializationType.values()) {
+            if (type.ordinal() == ordinal) {
+                return type;
             }
         }
-        return null;
+        throw new IllegalArgumentException("Unknown ordinal: " + ordinal);
     }
 }

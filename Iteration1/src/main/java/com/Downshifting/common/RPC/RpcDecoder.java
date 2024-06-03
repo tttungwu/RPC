@@ -29,14 +29,7 @@ public class RpcDecoder extends ByteToMessageDecoder {
         byte msgType = in.readByte();
         byte status = in.readByte();
         long requestId = in.readLong();
-        final int len = in.readInt();
-        if (in.readableBytes() < len){
-            in.resetReaderIndex();
-            return;
-        }
-        final byte[] bytes = new byte[len];
-        in.readBytes(bytes);
-        final String serialization = new String(bytes);
+        final byte serializationType = in.readByte();
         int dataLength = in.readInt();
         if (in.readableBytes() < dataLength) {
             // 回退标记位置
@@ -58,10 +51,9 @@ public class RpcDecoder extends ByteToMessageDecoder {
         header.setStatus(status);
         header.setRequestId(requestId);
         header.setMsgType(msgType);
-        header.setSerialization(bytes);
-        header.setSerializationLen(len);
+        header.setSerializationType(serializationType);;
         header.setMsgLen(dataLength);
-        RpcSerialization rpcSerialization = SerializationFactory.get(RpcSerializationType.get(serialization));
+        RpcSerialization rpcSerialization = SerializationFactory.get(RpcSerializationType.fromOrdinal(serializationType));
         RpcProtocol protocol = new RpcProtocol();
         protocol.setHeader(header);
         switch (msgTypeEnum) {

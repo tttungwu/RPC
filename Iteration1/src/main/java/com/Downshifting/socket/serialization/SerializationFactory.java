@@ -8,14 +8,14 @@ import java.util.Map;
 
 public class SerializationFactory {
 
-    private static Map<RpcSerializationType, com.Downshifting.socket.serialization.RpcSerialization> serializationMap
-            = new HashMap<RpcSerializationType, com.Downshifting.socket.serialization.RpcSerialization>();
+    private static Map<RpcSerializationType, RpcSerialization> serializationMap
+            = new HashMap<RpcSerializationType, RpcSerialization>();
 
     static {
         serializationMap.put(RpcSerializationType.JSON,new JsonSerialization());
     }
 
-    public static com.Downshifting.socket.serialization.RpcSerialization get(RpcSerializationType serialization){
+    public static RpcSerialization get(RpcSerializationType serialization){
         return serializationMap.get(serialization);
     }
 }

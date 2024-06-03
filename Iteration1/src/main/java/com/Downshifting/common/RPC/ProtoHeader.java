@@ -15,8 +15,8 @@ public class ProtoHeader implements Serializable {
     private byte status;
     // 请求ID
     private long requestId;
-    private int serializationLen;
-    private byte[] serialization;
+    // 序列化类型
+    private byte serializationType;
     // 请求体长度
     private int msgLen;
 
@@ -60,20 +60,12 @@ public class ProtoHeader implements Serializable {
         this.requestId = requestId;
     }
 
-    public int getSerializationLen() {
-        return serializationLen;
+    public byte getSerializationType() {
+        return serializationType;
     }
 
-    public void setSerializationLen(int serializationLen) {
-        this.serializationLen = serializationLen;
-    }
-
-    public byte[] getSerialization() {
-        return serialization;
-    }
-
-    public void setSerialization(byte[] serialization) {
-        this.serialization = serialization;
+    public void setSerializationType(byte serializationType) {
+        this.serializationType = serializationType;
     }
 
     public int getMsgLen() {
