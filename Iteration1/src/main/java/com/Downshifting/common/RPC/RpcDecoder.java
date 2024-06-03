@@ -6,8 +6,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import com.Downshifting.common.constants.MsgType;
 import com.Downshifting.common.constants.ProtocolConstants;
-import com.Downshifting.socket.serialization.RpcSerialization;
-import com.Downshifting.socket.serialization.SerializationFactory;
+import com.Downshifting.comms.serialization.RpcSerialization;
+import com.Downshifting.comms.serialization.SerializationFactory;
 
 
 import java.util.*;

@@ -4,8 +4,8 @@ import com.Downshifting.common.constants.RpcSerializationType;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
-import com.Downshifting.socket.serialization.RpcSerialization;
-import com.Downshifting.socket.serialization.SerializationFactory;
+import com.Downshifting.comms.serialization.RpcSerialization;
+import com.Downshifting.comms.serialization.SerializationFactory;
 
 
 public class RpcEncoder extends MessageToByteEncoder<RpcProtocol<Object>> {
