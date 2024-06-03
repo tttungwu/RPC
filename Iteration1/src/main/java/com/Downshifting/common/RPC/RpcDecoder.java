@@ -12,27 +12,33 @@ import io.netty.handler.codec.ByteToMessageDecoder;
 import java.util.List;
 
 public class RpcDecoder extends ByteToMessageDecoder {
+
     @Override
-    protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) throws Exception {
-        byteBuf.markReaderIndex();
-        short magic = byteBuf.readShort();
+    protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf in, List<Object> out) throws Exception {
+        // 标记当前读取位置，便于后面回退
+        in.markReaderIndex();
+
+        short magic = in.readShort();
         if (magic != ProtocolConstants.MAGIC) {
-            throw new IllegalArgumentException("magic number is illegal: " + magic);
+            throw new IllegalArgumentException("magic number is illegal, " + magic);
         }
-        byte version = byteBuf.readByte();
-        byte msgType = byteBuf.readByte();
-        byte status = byteBuf.readByte();
-        long requestId = byteBuf.readLong();
-        byte serializationType = byteBuf.readByte();
-        int dataLength = byteBuf.readInt();
-        if (byteBuf.readableBytes() < dataLength) {
-            byteBuf.resetReaderIndex();
+        byte version = in.readByte();
+        byte msgType = in.readByte();
+        byte status = in.readByte();
+        long requestId = in.readLong();
+        byte serializationType = in.readByte();
+        int dataLength = in.readInt();
+        if (in.readableBytes() < dataLength) {
+            in.resetReaderIndex();
             return;
         }
         byte[] data = new byte[dataLength];
-        byteBuf.readBytes(data);
+        in.readBytes(data);
         MsgType msgTypeEnum = MsgType.fromOrdinal(msgType);
-
+        if (msgTypeEnum == null) {
+            return;
+        }
+        // 构建消息头
         ProtoHeader header = new ProtoHeader();
         header.setMagic(magic);
         header.setVersion(version);
@@ -56,6 +62,6 @@ public class RpcDecoder extends ByteToMessageDecoder {
                 protocol.setBody(response);
                 break;
         }
-        list.add(protocol);
+        out.add(protocol);
     }
 }

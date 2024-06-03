@@ -51,7 +51,7 @@ public class Client {
     }
 
     public static void main(String[] args) throws Exception {
-        Client nettyClient = new Client(new Endpoint("127.0.0.1", 8083));
+        Client nettyClient = new Client(new Endpoint("127.0.0.1", 8084));
         final RpcProtocol rpcProtocol = new RpcProtocol();
         // 构建消息头
         ProtoHeader header = new ProtoHeader();
