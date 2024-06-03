@@ -1,5 +1,7 @@
 package com.Downshifting.comms.client;
 
+import com.Downshifting.Register.RegistryFactory;
+import com.Downshifting.Register.RegistryService;
 import com.Downshifting.common.RPC.*;
 import com.Downshifting.common.constants.*;
 import com.Downshifting.common.utils.ClientCache;
@@ -17,6 +19,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.concurrent.DefaultPromise;
 
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class Client {
@@ -45,24 +48,29 @@ public class Client {
                                 .addLast(new ClientHandler());
                     }
                 });
+        ClientCache.BOOT_STRAP = bootstrap;
     }
 
-    public void registerBean(String serviceName){
-        ClientCache.services.put(new Service(serviceName, "1.0"), server);
-        channelFuture = bootstrap.connect(server.getIp(), server.getPort());
-        ClientCache.channelFutureMap.put(server, channelFuture);
+    public void connectServer() throws Exception {
+        for (Service service : ClientCache.SUBSCRIBE_SERVICE_LIST){
+            final RegistryService registryService = RegistryFactory.get(RegisterType.ZOOKEEPER);
+            final List<Endpoint> endpoints = registryService.discovery(service);
+            ClientCache.SERVICE_ENDPOINTS_MAP.put(service, endpoints);
+            for (Endpoint endpoint : endpoints) {
+                final ChannelFuture connect = bootstrap.connect(endpoint.getIp(), endpoint.getPort());
+                ClientCache.ENDPOINT_CHANNEL_MAP.put(endpoint, connect);
+            }
+        }
     }
-
-    public void sendRequest(Object request) {
-        channelFuture.channel().writeAndFlush(request);
-    }
-
+    
     public static void main(String[] args) throws Exception {
         final Client client = new Client(new Endpoint("127.0.0.1", 8084));
-        client.registerBean(CalcServiceImpl.class.getName());
+        final RegistryService registryService = RegistryFactory.get(RegisterType.ZOOKEEPER);
+        final Service service = new Service(CalcService.class.getName(), "1.0");
+        registryService.subscribe(service);
+        client.connectServer();
         final Proxy iproxy = ProxyFactory.getProxy(RpcProxyType.CG_LIB);
-        final CalcServiceImpl proxy = iproxy.getProxy(CalcServiceImpl.class);
-        System.out.println(proxy.calc2(2, 3));
-        System.out.println(proxy.calc1(2, 3));
+        final CalcService proxy = iproxy.getProxy(CalcService.class);
+        System.out.println(proxy.calc2(3, 4));
     }
 }

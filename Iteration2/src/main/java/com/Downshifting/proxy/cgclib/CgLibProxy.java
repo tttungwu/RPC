@@ -1,11 +1,14 @@
 package com.Downshifting.proxy.cgclib;
 
+import com.Downshifting.Register.RegistryFactory;
 import com.Downshifting.common.RPC.*;
 import com.Downshifting.common.constants.MsgType;
 import com.Downshifting.common.constants.ProtocolConstants;
+import com.Downshifting.common.constants.RegisterType;
 import com.Downshifting.common.constants.RpcSerializationType;
 import com.Downshifting.common.utils.ClientCache;
 import com.Downshifting.common.utils.Endpoint;
+import com.Downshifting.common.utils.EndpointService;
 import com.Downshifting.common.utils.Service;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.DefaultEventLoop;
@@ -14,10 +17,14 @@ import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 
 import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class CgLibProxy implements MethodInterceptor {
     private final Object object;
+
+    private final Random random = new Random();
 
     public CgLibProxy(Object o){
         this.object = o;
@@ -67,9 +74,13 @@ public class CgLibProxy implements MethodInterceptor {
         final RpcRequest rpcRequest = buildRpcRequest(method, objects);
         rpcProtocol.setBody(rpcRequest);
 
-        // 找到服务地址
-        final Endpoint endpoint = ClientCache.services.get(new Service(object.getClass().getName(), "1.0"));
-        final ChannelFuture channelFuture = ClientCache.channelFutureMap.get(endpoint);
+        final List<Endpoint> endpoints = RegistryFactory.get(RegisterType.ZOOKEEPER).discovery(new Service(o.getClass().getName(), "1.0"));
+        if (endpoints.isEmpty()){
+            throw new Exception("No service is available");
+        }
+        final Endpoint endpoint = endpoints.get(random.nextInt(endpoints.size()));
+        final ChannelFuture channelFuture = ClientCache.ENDPOINT_CHANNEL_MAP.get(endpoint);
+
         // 通过Netty的channel发送RPC协议对象
         channelFuture.channel().writeAndFlush(rpcProtocol);
         // 跟踪RPC请求的响应

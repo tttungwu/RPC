@@ -8,6 +8,14 @@ public class EndpointService {
     // 服务的具体信息
     Service service;
 
+    public EndpointService() {
+    }
+
+    public EndpointService(Endpoint endpoint, Service service) {
+        this.endpoint = endpoint;
+        this.service = service;
+    }
+
     public Endpoint getEndpoint() {
         return endpoint;
     }

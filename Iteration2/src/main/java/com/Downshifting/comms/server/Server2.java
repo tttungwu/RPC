@@ -10,6 +10,7 @@ import com.Downshifting.common.utils.Endpoint;
 import com.Downshifting.common.utils.EndpointService;
 import com.Downshifting.common.utils.Service;
 import com.Downshifting.service.CalcServiceImpl;
+import com.Downshifting.service.CalcServiceImpl2;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -21,7 +22,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-public class Server {
+public class Server2 {
 
     private String host;
 
@@ -29,7 +30,7 @@ public class Server {
 
     private ServerBootstrap bootstrap;
 
-    public Server(int port) {
+    public Server2(int port) {
         this.port = port;
         InetAddress inetAddress = null;
         try {
@@ -84,8 +85,8 @@ public class Server {
     }
 
     public static void main(String[] args) throws Exception {
-        final Server server = new Server(8084);
-        server.registerBean(CalcServiceImpl.class);
+        final Server2 server = new Server2(8085);
+        server.registerBean(CalcServiceImpl2.class);
         server.run();
     }
 }
