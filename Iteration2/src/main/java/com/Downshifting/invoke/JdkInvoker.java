@@ -26,6 +26,6 @@ public class JdkInvoker implements Invoker{
             }
         });
 
-        return methodInvocation.invoke(rpcRequest.getParameter());
+        return methodInvocation.invoke(rpcRequest.getParameters());
     }
 }

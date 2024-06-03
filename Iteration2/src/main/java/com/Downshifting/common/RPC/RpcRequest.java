@@ -13,7 +13,7 @@ public class RpcRequest implements Serializable {
     // 方法的哈希值
     private Integer methodCode;
     // 请求参数及类型
-    private Object[] parameter;
+    private Object[] parameters;
     private Class<?>[] parameterTypes;
 
     public String getServiceVersion() {
@@ -48,12 +48,12 @@ public class RpcRequest implements Serializable {
         this.methodCode = methodCode;
     }
 
-    public Object[] getParameter() {
-        return parameter;
+    public Object[] getParameters() {
+        return parameters;
     }
 
-    public void setParameter(Object[] parameter) {
-        this.parameter = parameter;
+    public void setParameters(Object[] parameters) {
+        this.parameters = parameters;
     }
 
     public Class<?>[] getParameterTypes() {
