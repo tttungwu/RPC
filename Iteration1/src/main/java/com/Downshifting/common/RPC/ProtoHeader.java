@@ -6,73 +6,73 @@ import java.io.Serializable;
 
 public class ProtoHeader implements Serializable {
     // 魔数
-    private short magic;
+    private Short magic;
     // 协议版本号
-    private byte version;
+    private Byte version;
     // 请求类型
-    private byte msgType;
+    private Byte msgType;
     // 请求状态
-    private byte status;
+    private Byte status;
     // 请求ID
-    private long requestId;
+    private Long requestId;
     // 序列化类型
-    private byte serializationType;
+    private Byte serializationType;
     // 请求体长度
-    private int msgLen;
+    private Integer msgLen;
 
-    public short getMagic() {
+    public Short getMagic() {
         return magic;
     }
 
-    public void setMagic(short magic) {
+    public void setMagic(Short magic) {
         this.magic = magic;
     }
 
-    public byte getVersion() {
+    public Byte getVersion() {
         return version;
     }
 
-    public void setVersion(byte version) {
+    public void setVersion(Byte version) {
         this.version = version;
     }
 
-    public byte getMsgType() {
+    public Byte getMsgType() {
         return msgType;
     }
 
-    public void setMsgType(byte msgType) {
+    public void setMsgType(Byte msgType) {
         this.msgType = msgType;
     }
 
-    public byte getStatus() {
+    public Byte getStatus() {
         return status;
     }
 
-    public void setStatus(byte status) {
+    public void setStatus(Byte status) {
         this.status = status;
     }
 
-    public long getRequestId() {
+    public Long getRequestId() {
         return requestId;
     }
 
-    public void setRequestId(long requestId) {
+    public void setRequestId(Long requestId) {
         this.requestId = requestId;
     }
 
-    public byte getSerializationType() {
+    public Byte getSerializationType() {
         return serializationType;
     }
 
-    public void setSerializationType(byte serializationType) {
+    public void setSerializationType(Byte serializationType) {
         this.serializationType = serializationType;
     }
 
-    public int getMsgLen() {
+    public Integer getMsgLen() {
         return msgLen;
     }
 
-    public void setMsgLen(int msgLen) {
+    public void setMsgLen(Integer msgLen) {
         this.msgLen = msgLen;
     }
 }
