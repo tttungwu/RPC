@@ -10,17 +10,13 @@ import com.Downshifting.common.utils.Service;
 import com.Downshifting.proxy.Proxy;
 import com.Downshifting.proxy.ProxyFactory;
 import com.Downshifting.service.CalcService;
-import com.Downshifting.service.CalcServiceImpl;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.util.concurrent.DefaultPromise;
 
-import java.lang.reflect.Method;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class Client {
 
