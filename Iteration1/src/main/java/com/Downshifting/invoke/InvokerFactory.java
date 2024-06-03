@@ -1,37 +1,20 @@
 package com.Downshifting.invoke;
 
-import com.Downshifting.common.constant.RpcInvokerType;
+import com.Downshifting.common.constants.RpcInvoker;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class InvokerFactory {
 
-    private static final ConcurrentMap<RpcInvokerType, Invoker> invokerMap = new ConcurrentHashMap<>();
+    public static Map<RpcInvoker,Invoker> invokerInvokerMap = new HashMap();
 
     static {
-        register(RpcInvokerType.JDK, new JdkInvoker());
+        invokerInvokerMap.put(RpcInvoker.JDK,new JdkReflectionInvoker());
     }
 
-    // 注册新的Invoker
-    public static void register(RpcInvokerType key, Invoker invoker) {
-        if (key == null || invoker == null) {
-            throw new IllegalArgumentException("Key and Invoker must not be null");
-        }
-        invokerMap.put(key, invoker);
+    public static Invoker get(RpcInvoker rpcInvoker){
+        return invokerInvokerMap.get(rpcInvoker);
     }
-
-    // 检查是否已经注册了特定的Invoker
-    public static boolean isRegistered(RpcInvokerType key) {
-        return invokerMap.containsKey(key);
-    }
-
-    // 获取Invoker
-    public static Invoker get(RpcInvokerType rpcInvoker) {
-        if (!InvokerFactory.isRegistered(rpcInvoker)) {
-            throw new IllegalArgumentException("No invoker registered for key: " + rpcInvoker);
-        }
-        return invokerMap.get(rpcInvoker);
-    }
-
 }

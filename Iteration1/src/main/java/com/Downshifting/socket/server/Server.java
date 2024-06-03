@@ -1,4 +1,4 @@
-package com.Downshifting.comms.server;
+package com.Downshifting.socket.server;
 
 import com.Downshifting.common.RPC.RpcDecoder;
 import com.Downshifting.common.RPC.RpcEncoder;
@@ -9,6 +9,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+
 
 public class Server {
     private final int port;
@@ -34,7 +35,7 @@ public class Server {
                     })
                     .option(ChannelOption.SO_BACKLOG, 128)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
-
+            System.out.println("debug");
             b.bind(port).sync().channel().closeFuture().sync();
         } finally {
             workerGroup.shutdownGracefully();
@@ -43,6 +44,6 @@ public class Server {
     }
 
     public static void main(String[] args) throws Exception {
-        new Server(8084).run();
+        new Server(8083).run();
     }
 }

@@ -2,6 +2,7 @@ package com.Downshifting.common.RPC;
 
 import io.netty.util.concurrent.Promise;
 
+
 public class RpcFuture <T> {
     // 异步结果
     private Promise<T> promise;

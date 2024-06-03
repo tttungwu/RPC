@@ -1,8 +1,7 @@
 package com.Downshifting.common.RPC;
 
-import com.Downshifting.common.RPC.ProtoHeader;
-
 import java.io.Serializable;
+
 
 public class RpcProtocol<T> implements Serializable {
     // 请求头

@@ -1,76 +1,86 @@
 package com.Downshifting.common.RPC;
 
+
 import java.io.Serializable;
+
 
 public class ProtoHeader implements Serializable {
     // 魔数
-    private Short magic;
+    private short magic;
     // 协议版本号
-    private Byte version;
-    // 消息类型
-    private Byte msgType;
-    // 状态
-    private Byte status;
-    // 请求 ID
-    private Long requestId;
-    // 序列化类型
-    private Byte serializationType;
-    // 消息体长度
-    private Integer msgLen;
+    private byte version;
+    // 请求类型
+    private byte msgType;
+    // 请求状态
+    private byte status;
+    // 请求ID
+    private long requestId;
+    private int serializationLen;
+    private byte[] serialization;
+    // 请求体长度
+    private int msgLen;
 
-    public Short getMagic() {
+    public short getMagic() {
         return magic;
     }
 
-    public void setMagic(Short magic) {
+    public void setMagic(short magic) {
         this.magic = magic;
     }
 
-    public Byte getVersion() {
+    public byte getVersion() {
         return version;
     }
 
-    public void setVersion(Byte version) {
+    public void setVersion(byte version) {
         this.version = version;
     }
 
-    public Byte getMsgType() {
+    public byte getMsgType() {
         return msgType;
     }
 
-    public void setMsgType(Byte msgType) {
+    public void setMsgType(byte msgType) {
         this.msgType = msgType;
     }
 
-    public Byte getStatus() {
+    public byte getStatus() {
         return status;
     }
 
-    public void setStatus(Byte status) {
+    public void setStatus(byte status) {
         this.status = status;
     }
 
-    public Long getRequestId() {
+    public long getRequestId() {
         return requestId;
     }
 
-    public void setRequestId(Long requestId) {
+    public void setRequestId(long requestId) {
         this.requestId = requestId;
     }
 
-    public Byte getSerializationType() {
-        return serializationType;
+    public int getSerializationLen() {
+        return serializationLen;
     }
 
-    public void setSerializationType(Byte serializationType) {
-        this.serializationType = serializationType;
+    public void setSerializationLen(int serializationLen) {
+        this.serializationLen = serializationLen;
     }
 
-    public Integer getMsgLen() {
+    public byte[] getSerialization() {
+        return serialization;
+    }
+
+    public void setSerialization(byte[] serialization) {
+        this.serialization = serialization;
+    }
+
+    public int getMsgLen() {
         return msgLen;
     }
 
-    public void setMsgLen(Integer msgLen) {
+    public void setMsgLen(int msgLen) {
         this.msgLen = msgLen;
     }
 }

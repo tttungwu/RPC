@@ -2,6 +2,7 @@ package com.Downshifting.common.RPC;
 
 import java.io.Serializable;
 
+
 public class RpcResponse implements Serializable {
     // 成功调用返回数据
     private Object data;

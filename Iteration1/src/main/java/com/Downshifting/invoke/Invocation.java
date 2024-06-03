@@ -1,28 +1,27 @@
-package com.Downshifting.common.RPC;
+package com.Downshifting.invoke;
 
-import java.io.Serializable;
+import com.Downshifting.common.RPC.RpcRequest;
 
 
-public class RpcRequest implements Serializable {
-    // 服务版本
+public class Invocation {
+
     private String serviceVersion;
-    // 调用的类的全限定名
     private String className;
-    // 调用的方法名称
     private String methodName;
-    // 方法的哈希值
     private Integer methodCode;
-    // 请求参数及类型
+
     private Object parameter;
     private Class<?> parameterTypes;
 
-    public void setMethodCode(Integer methodCode) {
-        this.methodCode = methodCode;
+    public Invocation(RpcRequest rpcRequest){
+        this.serviceVersion = rpcRequest.getServiceVersion();
+        this.className = rpcRequest.getClassName();
+        this.methodName = rpcRequest.getMethodName();
+        this.parameter = rpcRequest.getParameter();
+        this.parameterTypes = rpcRequest.getParameterTypes();
+        this.methodCode = rpcRequest.getMethodCode();
     }
-
-    public Integer getMethodCode() {
-        return methodCode;
-    }
+    public Invocation(){}
 
     public String getServiceVersion() {
         return serviceVersion;
@@ -62,5 +61,13 @@ public class RpcRequest implements Serializable {
 
     public Class<?> getParameterTypes() {
         return parameterTypes;
+    }
+
+    public Integer getMethodCode() {
+        return methodCode;
+    }
+
+    public void setMethodCode(Integer methodCode) {
+        this.methodCode = methodCode;
     }
 }

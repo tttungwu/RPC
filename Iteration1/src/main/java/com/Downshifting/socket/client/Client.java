@@ -1,34 +1,36 @@
-package com.Downshifting.comms.client;
+package com.Downshifting.socket.client;
+
 
 import com.Downshifting.common.RPC.*;
-import com.Downshifting.common.constant.MsgStatus;
-import com.Downshifting.common.constant.MsgType;
-import com.Downshifting.common.constant.ProtocolConstants;
-import com.Downshifting.common.constant.RpcSerializationType;
-import com.Downshifting.common.utils.Endpoint;
-import com.Downshifting.service.CalcServiceImpl;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.concurrent.DefaultPromise;
+import com.Downshifting.service.HelloService;
+import com.Downshifting.common.constants.MsgType;
+import com.Downshifting.common.constants.ProtocolConstants;
+import com.Downshifting.common.constants.RpcSerialization;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
 
+
 public class Client {
 
-    private final Bootstrap bootstrap;
+    private final String host;
 
+    private final Integer port;
+
+    private final Bootstrap bootstrap;
     private final EventLoopGroup eventLoopGroup;
 
     private ChannelFuture channelFuture;
 
-    private Endpoint server;
-
-    public Client(Endpoint server) throws InterruptedException {
-        this.server = server;
+    public Client(String host, Integer port) throws InterruptedException {
+        this.host = host;
+        this.port = port;
 
         bootstrap = new Bootstrap();
         eventLoopGroup = new NioEventLoopGroup(4);
@@ -43,44 +45,51 @@ public class Client {
                                 .addLast(new ClientHandler());
                     }
                 });
-        channelFuture = bootstrap.connect(server.getIp(), server.getPort()).sync();
+        channelFuture = bootstrap.connect(host,port).sync();
+    }
+    public void sendRequest(Object o){
+        channelFuture.channel().writeAndFlush(o);
     }
 
-    public void sendRequest(Object request) {
-        channelFuture.channel().writeAndFlush(request);
-    }
 
     public static void main(String[] args) throws Exception {
-        Client nettyClient = new Client(new Endpoint("127.0.0.1", 8084));
+        final Client nettyClient = new Client("127.0.0.1",8083);
         final RpcProtocol rpcProtocol = new RpcProtocol();
         // 构建消息头
         ProtoHeader header = new ProtoHeader();
-        Long requestId = RpcRequestTracker.getRequestId();
+        long requestId = RpcRequestTracker.getRequestId();
         header.setMagic(ProtocolConstants.MAGIC);
         header.setVersion(ProtocolConstants.VERSION);
         header.setRequestId(requestId);
-        header.setSerializationType((byte) RpcSerializationType.JSON.ordinal());
+
+
+        final byte[] serialization = RpcSerialization.JSON.name.getBytes();
+        header.setSerializationLen(serialization.length);
+        header.setSerialization(serialization);
         header.setMsgType((byte) MsgType.REQUEST.ordinal());
-        header.setStatus((byte) MsgStatus.SUCCESS.ordinal());
+        header.setStatus((byte) 0x1);
         rpcProtocol.setHeader(header);
-        // 构建消息体
         final RpcRequest rpcRequest = new RpcRequest();
-        final Class<CalcServiceImpl> objClass = CalcServiceImpl.class;
-        rpcRequest.setClassName(objClass.getName());
-        final Method method = objClass.getMethod("calc1", Integer.class, Integer.class);
+
+        final Class<HelloService> aClass = HelloService.class;
+        rpcRequest.setClassName(aClass.getName());
+        final Method method = aClass.getMethod("hello", String.class);
         rpcRequest.setMethodCode(method.hashCode());
         rpcRequest.setMethodName(method.getName());
         rpcRequest.setServiceVersion("1.0");
-        rpcRequest.setParameterTypes(method.getParameterTypes());
-        rpcRequest.setParameter(new Object[]{1, 2});
+        rpcRequest.setParameterTypes(method.getParameterTypes()[0]);
+        rpcRequest.setParameter("xhy~");
         rpcProtocol.setBody(rpcRequest);
-        // 发送请求
+
         nettyClient.sendRequest(rpcProtocol);
 
         RpcFuture<RpcResponse> future = new RpcFuture(new DefaultPromise(new DefaultEventLoop()), 3000L);
 
         RpcRequestTracker.REQUEST_MAP.put(requestId, future);
-        RpcResponse rpcResponse = future.getPromise().sync().get(future.getTimeout(), TimeUnit.MILLISECONDS);
-        System.out.println(rpcResponse.getData());
+        Object rpcResponse = future.getPromise().sync().get(future.getTimeout(), TimeUnit.MILLISECONDS);
+        System.out.println(rpcResponse);
+
+
+
     }
 }
