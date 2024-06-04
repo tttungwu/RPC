@@ -1,4 +1,4 @@
-package cn.edu.xmu.Register;
+package cn.edu.xmu.register;
 
 import cn.edu.xmu.common.constants.RegisterType;
 

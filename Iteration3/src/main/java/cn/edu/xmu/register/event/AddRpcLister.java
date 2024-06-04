@@ -1,4 +1,4 @@
-package cn.edu.xmu.Register.event;
+package cn.edu.xmu.register.event;
 
 import cn.edu.xmu.common.utils.ClientCache;
 import cn.edu.xmu.common.utils.Endpoint;

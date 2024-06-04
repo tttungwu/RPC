@@ -1,7 +1,7 @@
 package cn.edu.xmu.comms.server;
 
-import cn.edu.xmu.Register.RegistryFactory;
-import cn.edu.xmu.Register.RegistryService;
+import cn.edu.xmu.register.RegistryFactory;
+import cn.edu.xmu.register.RegistryService;
 import cn.edu.xmu.common.RPC.RpcDecoder;
 import cn.edu.xmu.common.RPC.RpcEncoder;
 import cn.edu.xmu.common.annotation.RpcService;

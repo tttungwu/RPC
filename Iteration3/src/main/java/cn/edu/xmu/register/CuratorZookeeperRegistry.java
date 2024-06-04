@@ -1,10 +1,10 @@
-package cn.edu.xmu.Register;
+package cn.edu.xmu.register;
 
 
-import cn.edu.xmu.Register.event.AddRpcEventData;
-import cn.edu.xmu.Register.event.RemoveEventData;
-import cn.edu.xmu.Register.event.RpcEventData;
-import cn.edu.xmu.Register.event.RpcListerLoader;
+import cn.edu.xmu.register.event.AddRpcEventData;
+import cn.edu.xmu.register.event.RemoveEventData;
+import cn.edu.xmu.register.event.RpcEventData;
+import cn.edu.xmu.register.event.RpcListerLoader;
 import cn.edu.xmu.common.utils.ClientCache;
 import cn.edu.xmu.common.utils.Endpoint;
 import cn.edu.xmu.common.utils.EndpointService;

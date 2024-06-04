@@ -1,4 +1,4 @@
-package cn.edu.xmu.Register.event;
+package cn.edu.xmu.register.event;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;

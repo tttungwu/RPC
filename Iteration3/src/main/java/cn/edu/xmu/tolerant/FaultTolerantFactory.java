@@ -1,4 +1,4 @@
-package cn.edu.xmu.common.tolerant;
+package cn.edu.xmu.tolerant;
 
 import cn.edu.xmu.common.constants.FaultTolerantType;
 

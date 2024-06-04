@@ -1,4 +1,4 @@
-package cn.edu.xmu.Register.event;
+package cn.edu.xmu.register.event;
 
 
 public class AddRpcEventData implements RpcEventData {

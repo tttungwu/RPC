@@ -1,7 +1,7 @@
 package cn.edu.xmu.proxy.cgclib;
 
 import cn.edu.xmu.common.RPC.*;
-import cn.edu.xmu.Register.RegistryFactory;
+import cn.edu.xmu.register.RegistryFactory;
 import cn.edu.xmu.common.annotation.RpcReference;
 import cn.edu.xmu.common.constants.MsgType;
 import cn.edu.xmu.common.constants.ProtocolConstants;

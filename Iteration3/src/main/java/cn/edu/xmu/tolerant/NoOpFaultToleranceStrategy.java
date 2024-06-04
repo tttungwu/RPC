@@ -1,4 +1,4 @@
-package cn.edu.xmu.common.tolerant;
+package cn.edu.xmu.tolerant;
 
 public class NoOpFaultToleranceStrategy implements FaultTolerantStrategy{
     @Override
