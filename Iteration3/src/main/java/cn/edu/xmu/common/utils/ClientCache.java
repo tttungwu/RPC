@@ -19,6 +19,8 @@ public class ClientCache {
 
     public static Bootstrap BOOT_STRAP;
 
+    public static ChannelFuture loadBalanceChannel;
+
     public static FilterChain beforeFilterChain = new FilterChain();
 
     public static FilterChain afterFilterChain = new FilterChain();

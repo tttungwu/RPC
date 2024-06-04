@@ -14,10 +14,10 @@ import io.netty.handler.codec.string.StringEncoder;
 
 public class LoadBalancer {
 
-    private final int port;
+    private final Endpoint endpoint;
 
-    public LoadBalancer(int port) {
-        this.port = port;
+    public LoadBalancer(Endpoint endpoint) {
+        this.endpoint = endpoint;
     }
 
     public void start() throws InterruptedException {
@@ -38,7 +38,7 @@ public class LoadBalancer {
                     .option(ChannelOption.SO_BACKLOG, 128)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
 
-            ChannelFuture f = b.bind(port).sync();
+            ChannelFuture f = b.bind(endpoint.getIp(), endpoint.getPort()).sync();
             f.channel().closeFuture().sync();
         } finally {
             workerGroup.shutdownGracefully();
@@ -48,6 +48,6 @@ public class LoadBalancer {
 
     public static void main(String[] args) throws InterruptedException {
         int port = 8088; // 负载均衡服务器监听的端口
-        new LoadBalancer(port).start();
+        new LoadBalancer(new Endpoint("127.0.0.1", port)).start();
     }
 }

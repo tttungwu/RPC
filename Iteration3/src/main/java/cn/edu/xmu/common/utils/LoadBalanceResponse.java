@@ -2,13 +2,17 @@ package cn.edu.xmu.common.utils;
 
 public class LoadBalanceResponse {
 
-    private Endpoint selectedEndpoint;
+    private EndpointService selectedEndpointService;
 
-    public Endpoint getSelectedEndpoint() {
-        return selectedEndpoint;
+    public LoadBalanceResponse(EndpointService selectedEndpointService) {
+        this.selectedEndpointService = selectedEndpointService;
     }
 
-    public void setSelectedEndpoint(Endpoint selectedEndpoint) {
-        this.selectedEndpoint = selectedEndpoint;
+    public EndpointService getSelectedEndpointService() {
+        return selectedEndpointService;
+    }
+
+    public void setSelectedEndpointService(EndpointService selectedEndpointService) {
+        this.selectedEndpointService = selectedEndpointService;
     }
 }

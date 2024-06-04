@@ -75,6 +75,13 @@ public class CgLibProxy implements MethodInterceptor {
         return rpcRequest;
     }
 
+    Endpoint findServer() throws Exception {
+        final List<Endpoint> endpoints = RegistryFactory.get(RegisterType.ZOOKEEPER).discovery(new Service(serviceName, version));
+        if (endpoints.isEmpty()){
+            throw new Exception("No service is available");
+        }
+    }
+
     @Override
     public Object intercept(Object o, Method method, Object[] objects, MethodProxy methodProxy) throws Throwable {
         final RpcProtocol rpcProtocol = new RpcProtocol();
@@ -85,11 +92,7 @@ public class CgLibProxy implements MethodInterceptor {
         final RpcRequest rpcRequest = buildRpcRequest(method, objects);
         rpcProtocol.setBody(rpcRequest);
 
-        final List<Endpoint> endpoints = RegistryFactory.get(RegisterType.ZOOKEEPER).discovery(new Service(serviceName, version));
-        if (endpoints.isEmpty()){
-            throw new Exception("No service is available");
-        }
-        final Endpoint endpoint = endpoints.get(random.nextInt(endpoints.size()));
+        final Endpoint endpoint = findServer();
         final ChannelFuture channelFuture = ClientCache.ENDPOINT_CHANNEL_MAP.get(endpoint);
 
         // 通过Netty的channel发送RPC协议对象
