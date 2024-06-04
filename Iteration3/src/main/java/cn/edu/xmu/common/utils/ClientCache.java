@@ -1,5 +1,6 @@
 package cn.edu.xmu.common.utils;
 
+import cn.edu.xmu.filter.FilterChain;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 
@@ -17,6 +18,10 @@ public class ClientCache {
     public static List<Service> SUBSCRIBE_SERVICE_LIST = new CopyOnWriteArrayList<>();
 
     public static Bootstrap BOOT_STRAP;
+
+    public static FilterChain beforeFilterChain = new FilterChain();
+
+    public static FilterChain afterFilterChain = new FilterChain();
 
 
     // 私有构造函数，防止实例化
