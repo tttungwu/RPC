@@ -11,6 +11,7 @@
     <modules>
         <module>Iteration1</module>
         <module>Iteration2</module>
+        <module>Iteration3</module>
     </modules>
 
     <properties>
