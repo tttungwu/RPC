@@ -5,6 +5,7 @@ import cn.edu.xmu.common.RPC.RpcEncoder;
 import cn.edu.xmu.common.constants.RegisterType;
 import cn.edu.xmu.common.constants.RpcProxyType;
 import cn.edu.xmu.common.utils.ClientCache;
+import cn.edu.xmu.filter.client.RateLimitingFilter;
 import cn.edu.xmu.register.RegistryFactory;
 import cn.edu.xmu.register.RegistryService;
 import cn.edu.xmu.common.utils.Endpoint;
@@ -64,6 +65,7 @@ public class Client {
         final Service service = new Service(CalcService.class.getName(), "1.0");
         registryService.subscribe(service);
         client.connectServer();
+        ClientCache.beforeFilterChain.addFilter(new RateLimitingFilter());
         final Proxy iproxy = ProxyFactory.getProxy(RpcProxyType.CG_LIB);
         final CalcService proxy = iproxy.getProxy(CalcService.class);
         while (true) {

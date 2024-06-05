@@ -4,6 +4,8 @@ import cn.edu.xmu.common.RPC.*;
 import cn.edu.xmu.common.constants.*;
 import cn.edu.xmu.common.utils.*;
 import cn.edu.xmu.comms.client.ClientHandler;
+import cn.edu.xmu.filter.FilterData;
+import cn.edu.xmu.filter.FilterResponse;
 import cn.edu.xmu.register.RegistryFactory;
 import cn.edu.xmu.common.annotation.RpcReference;
 import cn.edu.xmu.tolerant.FaultContext;
@@ -157,6 +159,12 @@ public class CgLibProxy implements MethodInterceptor {
         // 构建请求体
         final RpcRequest rpcRequest = buildRpcRequest(method, objects);
         rpcProtocol.setBody(rpcRequest);
+        rpcRequest.getClientAttachments().put("token", "xmu-rpc");
+
+        FilterResponse filterResponse = ClientCache.beforeFilterChain.doFilter(new FilterData<>(rpcProtocol));
+        if (!filterResponse.getIsAccepted()) {
+            throw filterResponse.getException();
+        }
 
         final List<Endpoint> endpoints = RegistryFactory.get(RegisterType.ZOOKEEPER).discovery(new Service(serviceName, version));
         if (endpoints.isEmpty()){
