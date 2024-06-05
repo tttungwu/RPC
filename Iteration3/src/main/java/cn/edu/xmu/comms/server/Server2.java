@@ -1,5 +1,6 @@
 package cn.edu.xmu.comms.server;
 
+import cn.edu.xmu.filter.server.ServerAuthenticationFilter;
 import cn.edu.xmu.register.RegistryFactory;
 import cn.edu.xmu.register.RegistryService;
 import cn.edu.xmu.common.RPC.RpcDecoder;
@@ -89,6 +90,7 @@ public class Server2 {
     public static void main(String[] args) throws Exception {
         final Server2 server = new Server2(8085);
         server.registerBean(CalcServiceImpl2.class);
+        ServerCache.beforeFilterChain.addFilter(new ServerAuthenticationFilter());
         server.run();
     }
 }
