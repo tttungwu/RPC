@@ -1,37 +1,55 @@
 package cn.edu.xmu.proxy.cgclib;
 
 import cn.edu.xmu.common.RPC.*;
+import cn.edu.xmu.common.constants.*;
+import cn.edu.xmu.common.utils.*;
+import cn.edu.xmu.comms.client.ClientHandler;
 import cn.edu.xmu.register.RegistryFactory;
 import cn.edu.xmu.common.annotation.RpcReference;
-import cn.edu.xmu.common.constants.MsgType;
-import cn.edu.xmu.common.constants.ProtocolConstants;
-import cn.edu.xmu.common.constants.RegisterType;
-import cn.edu.xmu.common.constants.RpcSerializationType;
-import cn.edu.xmu.common.utils.ClientCache;
-import cn.edu.xmu.common.utils.Endpoint;
-import cn.edu.xmu.common.utils.Service;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.DefaultEventLoop;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.*;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.codec.string.StringEncoder;
 import io.netty.util.concurrent.DefaultPromise;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
+import org.codehaus.jackson.map.ObjectMapper;
 
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class CgLibProxy implements MethodInterceptor {
-
-    private final Random random = new Random();
 
     private final String serviceName;
 
     private final String version;
 
+    private ChannelFuture loadBalancerFuture;
+
     private final long time;
 
     private final TimeUnit timeUnit;
+
+    private final Bootstrap bootstrap;
+
+    private final EventLoopGroup eventLoopGroup;
+
+
+    // 请求ID
+    public final static AtomicLong LOAD_BALANCE_REQUEST_ID_GEN = new AtomicLong(0);
+    // 绑定请求
+    public static final ConcurrentMap<Long, CompletableFuture<String>> LOAD_BALANCE_REQUEST_MAP = new ConcurrentHashMap<>();
 
     public CgLibProxy(Class clazz){
         this.serviceName = clazz.getName();
@@ -39,6 +57,37 @@ public class CgLibProxy implements MethodInterceptor {
         version = rpcService.version();
         time = rpcService.time();
         timeUnit = rpcService.timeUnit();
+
+        bootstrap = new Bootstrap();
+        eventLoopGroup = new NioEventLoopGroup(1);
+        bootstrap.group(eventLoopGroup).channel(NioSocketChannel.class)
+                .option(ChannelOption.SO_KEEPALIVE, true)
+                .handler(new ChannelInitializer<SocketChannel>() {
+                    @Override
+                    protected void initChannel(SocketChannel socketChannel) throws Exception {
+                        socketChannel.pipeline()
+                                .addLast(new StringDecoder())
+                                .addLast(new StringEncoder())
+                                .addLast(new SimpleChannelInboundHandler<String>() {
+                                    @Override
+                                    protected void channelRead0(ChannelHandlerContext ctx, String msg) {
+                                        JSONObject jsonObject = JSON.parseObject(msg);
+                                        long requestId = jsonObject.getLong("requestId");
+                                        CompletableFuture<String> future = LOAD_BALANCE_REQUEST_MAP.remove(requestId);
+                                        if (future != null) {
+                                            future.complete(msg);
+                                        }
+                                    }
+                                });
+                    }
+                });
+
+        try {
+            loadBalancerFuture = this.bootstrap.connect("127.0.0.1", 8088).sync();
+        } catch (Exception e) {
+            loadBalancerFuture = null;
+            System.err.println("Failed to connect to load balancer: " + e.getMessage());
+        }
     }
 
     // 构建请求头
@@ -80,6 +129,25 @@ public class CgLibProxy implements MethodInterceptor {
         if (endpoints.isEmpty()){
             throw new Exception("No service is available");
         }
+
+        Endpoint selected = endpoints.get(0);
+        if (loadBalancerFuture != null) {
+            if (LOAD_BALANCE_REQUEST_ID_GEN.longValue() == Long.MAX_VALUE){
+                LOAD_BALANCE_REQUEST_ID_GEN.set(0);
+            }
+            Long requestId = LOAD_BALANCE_REQUEST_ID_GEN.incrementAndGet();
+            LoadBalanceRequest loadBalanceRequest = new LoadBalanceRequest(requestId, endpoints);
+            loadBalanceRequest.setLoadBalanceType(LoadBalanceType.Round);
+            String jsonRequest = JSON.toJSONString(loadBalanceRequest);
+            CompletableFuture<String> future = new CompletableFuture<>();
+            LOAD_BALANCE_REQUEST_MAP.put(requestId, future);
+            loadBalancerFuture.channel().writeAndFlush(jsonRequest).sync();
+            String jsonResponse = future.get();
+            LoadBalanceResponse response = JSON.parseObject(jsonResponse, LoadBalanceResponse.class);
+            selected = response.getSelectedEndpoint();
+        }
+
+        return selected;
     }
 
     @Override

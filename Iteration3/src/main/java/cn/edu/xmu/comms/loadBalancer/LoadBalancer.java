@@ -1,6 +1,7 @@
 package cn.edu.xmu.comms.loadBalancer;
 
 import cn.edu.xmu.common.utils.Endpoint;
+import cn.edu.xmu.common.utils.LoadBalanceCache;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -47,7 +48,6 @@ public class LoadBalancer {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        int port = 8088; // 负载均衡服务器监听的端口
-        new LoadBalancer(new Endpoint("127.0.0.1", port)).start();
+        new LoadBalancer(LoadBalanceCache.endpoint).start();
     }
 }

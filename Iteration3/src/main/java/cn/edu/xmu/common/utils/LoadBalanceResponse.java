@@ -2,17 +2,28 @@ package cn.edu.xmu.common.utils;
 
 public class LoadBalanceResponse {
 
-    private EndpointService selectedEndpointService;
+    private Long requestId;
 
-    public LoadBalanceResponse(EndpointService selectedEndpointService) {
-        this.selectedEndpointService = selectedEndpointService;
+    private Endpoint selectedEndpoint;
+
+    public LoadBalanceResponse(Long requestId, Endpoint selectedEndpoint) {
+        this.requestId = requestId;
+        this.selectedEndpoint = selectedEndpoint;
     }
 
-    public EndpointService getSelectedEndpointService() {
-        return selectedEndpointService;
+    public Long getRequestId() {
+        return requestId;
     }
 
-    public void setSelectedEndpointService(EndpointService selectedEndpointService) {
-        this.selectedEndpointService = selectedEndpointService;
+    public void setRequestId(Long requestId) {
+        this.requestId = requestId;
+    }
+
+    public Endpoint getSelectedEndpoint() {
+        return selectedEndpoint;
+    }
+
+    public void setSelectedEndpoint(Endpoint selectedEndpoint) {
+        this.selectedEndpoint = selectedEndpoint;
     }
 }
