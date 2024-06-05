@@ -159,7 +159,7 @@ public class CgLibProxy implements MethodInterceptor {
         // 构建请求体
         final RpcRequest rpcRequest = buildRpcRequest(method, objects);
         rpcProtocol.setBody(rpcRequest);
-        rpcRequest.getClientAttachments().put("token", "xmu-rpc");
+        rpcRequest.getClientAttachments().put("token", "xmu_rpc");
 
         FilterResponse filterResponse = ClientCache.beforeFilterChain.doFilter(new FilterData<>(rpcProtocol));
         if (!filterResponse.getIsAccepted()) {

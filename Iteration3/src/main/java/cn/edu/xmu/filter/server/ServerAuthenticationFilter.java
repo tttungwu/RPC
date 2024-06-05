@@ -12,7 +12,7 @@ public class ServerAuthenticationFilter implements Filter {
         final RpcProtocol rpcProtocol = (RpcProtocol) filterData.getObject();
         final RpcRequest rpcRequest = (RpcRequest) rpcProtocol.getBody();
         Object value = rpcRequest.getClientAttachments().get("token");
-        if (!value.equals("xmu_rpc")) {
+        if (!value.equals("xmu-rpc")) {
             return new FilterResponse(new Exception("invalid token"));
         }
         return new FilterResponse(true);

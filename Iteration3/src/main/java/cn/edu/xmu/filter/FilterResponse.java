@@ -12,7 +12,7 @@ public class FilterResponse {
     }
 
     public FilterResponse(Exception exception) {
-        this.isAccepted = null;
+        this.isAccepted = false;
         this.exception = exception;
     }
 
