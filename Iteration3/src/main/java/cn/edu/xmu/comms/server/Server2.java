@@ -13,6 +13,7 @@ import cn.edu.xmu.common.utils.ServerCache;
 import cn.edu.xmu.common.utils.Service;
 import cn.edu.xmu.service.CalcServiceImpl2;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
@@ -22,6 +23,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.concurrent.CountDownLatch;
 
 public class Server2 {
 
@@ -42,7 +44,7 @@ public class Server2 {
         host = inetAddress.getHostAddress();
     }
 
-    public void run() throws Exception {
+    public void run(CountDownLatch latch) throws Exception {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
@@ -60,7 +62,9 @@ public class Server2 {
                     .option(ChannelOption.SO_BACKLOG, 128)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
 
-            bootstrap.bind(port).sync().channel().closeFuture().sync();
+            ChannelFuture future = bootstrap.bind(port).sync();
+            latch.countDown(); // 服务器启动成功，减少计数
+            future.channel().closeFuture().sync();
         } finally {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
@@ -76,7 +80,7 @@ public class Server2 {
         }
         final RpcService annotation = (RpcService) clazz.getAnnotation(RpcService.class);
         String serviceName = clazz.getInterfaces()[0].getName();
-        if(!(annotation.serviceInterface().equals(void.class))){
+        if (!(annotation.serviceInterface().equals(void.class))) {
             serviceName = annotation.serviceInterface().getName();
         }
         Service service = new Service(serviceName, annotation.version());
@@ -89,8 +93,21 @@ public class Server2 {
 
     public static void main(String[] args) throws Exception {
         final Server2 server = new Server2(8085);
+        CountDownLatch latch = new CountDownLatch(1);
+
+        // 启动服务器线程
+        new Thread(() -> {
+            try {
+                server.run(latch);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+
+        // 等待服务器启动成功
+        latch.await();
+
+        // 服务器启动成功后注册Bean
         server.registerBean(CalcServiceImpl2.class);
-        ServerCache.beforeFilterChain.addFilter(new ServerAuthenticationFilter());
-        server.run();
     }
 }
