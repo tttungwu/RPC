@@ -128,3 +128,33 @@ INFO main-SendThread(127.0.0.1:2181) org.apache.zookeeper.ClientCnxn - Session e
 INFO main-EventThread org.apache.curator.framework.state.ConnectionStateManager - State change: CONNECTED
 INFO main-EventThread org.apache.curator.framework.imps.EnsembleTracker - New config event received: {}
 INFO main-EventThread org.apache.curator.framework.imps.EnsembleTracker - New config event received: {}
+ERROR Curator-PathChildrenCache-0 org.apache.curator.framework.recipes.cache.PathChildrenCache - 
+org.apache.zookeeper.KeeperException$NoNodeException: KeeperErrorCode = NoNode for /rpc/server/cn.edu.xmu.service.CalcService/1.0/127.0.0.1:8084
+	at org.apache.zookeeper.KeeperException.create(KeeperException.java:115)
+	at org.apache.zookeeper.KeeperException.create(KeeperException.java:51)
+	at org.apache.zookeeper.ZooKeeper.getData(ZooKeeper.java:2019)
+	at org.apache.curator.framework.imps.GetDataBuilderImpl$4.call(GetDataBuilderImpl.java:327)
+	at org.apache.curator.framework.imps.GetDataBuilderImpl$4.call(GetDataBuilderImpl.java:316)
+	at org.apache.curator.connection.StandardConnectionHandlingPolicy.callWithRetry(StandardConnectionHandlingPolicy.java:64)
+	at org.apache.curator.RetryLoop.callWithRetry(RetryLoop.java:100)
+	at org.apache.curator.framework.imps.GetDataBuilderImpl.pathInForeground(GetDataBuilderImpl.java:313)
+	at org.apache.curator.framework.imps.GetDataBuilderImpl.forPath(GetDataBuilderImpl.java:304)
+	at org.apache.curator.framework.imps.GetDataBuilderImpl.forPath(GetDataBuilderImpl.java:35)
+	at cn.edu.xmu.register.CuratorZookeeperRegistry$1.childEvent(CuratorZookeeperRegistry.java:167)
+	at org.apache.curator.framework.recipes.cache.PathChildrenCache$5.apply(PathChildrenCache.java:535)
+	at org.apache.curator.framework.recipes.cache.PathChildrenCache$5.apply(PathChildrenCache.java:529)
+	at org.apache.curator.framework.listen.ListenerContainer$1.run(ListenerContainer.java:93)
+	at org.apache.curator.shaded.com.google.common.util.concurrent.MoreExecutors$DirectExecutor.execute(MoreExecutors.java:435)
+	at org.apache.curator.framework.listen.ListenerContainer.forEach(ListenerContainer.java:85)
+	at org.apache.curator.framework.recipes.cache.PathChildrenCache.callListeners(PathChildrenCache.java:527)
+	at org.apache.curator.framework.recipes.cache.EventOperation.invoke(EventOperation.java:35)
+	at org.apache.curator.framework.recipes.cache.PathChildrenCache$9.run(PathChildrenCache.java:786)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266)
+	at java.util.concurrent.FutureTask.run(FutureTask.java)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266)
+	at java.util.concurrent.FutureTask.run(FutureTask.java)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:750)

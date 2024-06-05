@@ -6,6 +6,9 @@ import cn.edu.xmu.common.utils.*;
 import cn.edu.xmu.comms.client.ClientHandler;
 import cn.edu.xmu.register.RegistryFactory;
 import cn.edu.xmu.common.annotation.RpcReference;
+import cn.edu.xmu.tolerant.FaultContext;
+import cn.edu.xmu.tolerant.FaultTolerantFactory;
+import cn.edu.xmu.tolerant.FaultTolerantStrategy;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import io.netty.bootstrap.Bootstrap;
@@ -124,12 +127,7 @@ public class CgLibProxy implements MethodInterceptor {
         return rpcRequest;
     }
 
-    Endpoint findServer() throws Exception {
-        final List<Endpoint> endpoints = RegistryFactory.get(RegisterType.ZOOKEEPER).discovery(new Service(serviceName, version));
-        if (endpoints.isEmpty()){
-            throw new Exception("No service is available");
-        }
-
+    Endpoint findServer(List<Endpoint> endpoints) throws Exception {
         Endpoint selected = endpoints.get(0);
         if (loadBalancerFuture != null) {
             if (LOAD_BALANCE_REQUEST_ID_GEN.longValue() == Long.MAX_VALUE){
@@ -160,7 +158,12 @@ public class CgLibProxy implements MethodInterceptor {
         final RpcRequest rpcRequest = buildRpcRequest(method, objects);
         rpcProtocol.setBody(rpcRequest);
 
-        final Endpoint endpoint = findServer();
+        final List<Endpoint> endpoints = RegistryFactory.get(RegisterType.ZOOKEEPER).discovery(new Service(serviceName, version));
+        if (endpoints.isEmpty()){
+            throw new Exception("No service is available");
+        }
+
+        final Endpoint endpoint = findServer(endpoints);
         final ChannelFuture channelFuture = ClientCache.ENDPOINT_CHANNEL_MAP.get(endpoint);
 
         // 通过Netty的channel发送RPC协议对象
@@ -170,8 +173,12 @@ public class CgLibProxy implements MethodInterceptor {
         RpcRequestTracker.REQUEST_MAP.put(header.getRequestId(), future);
         RpcResponse rpcResponse = future.getPromise().sync().get(future.getTimeout(), TimeUnit.MILLISECONDS);
 
+        // 发生异常
         if (rpcResponse.getException() != null){
-            throw rpcResponse.getException();
+            rpcResponse.getException().printStackTrace();
+            final FaultContext faultContext = new FaultContext(endpoint, endpoints, rpcProtocol, rpcProtocol.getHeader().getRequestId(), rpcResponse.getException());
+            final FaultTolerantStrategy faultTolerantStrategy = FaultTolerantFactory.get(FaultTolerantType.Retry);
+            return faultTolerantStrategy.handler(faultContext);
         }
         return rpcResponse.getData();
     }

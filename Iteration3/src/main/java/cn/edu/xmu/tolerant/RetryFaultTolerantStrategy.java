@@ -4,6 +4,7 @@ import cn.edu.xmu.common.RPC.RpcFuture;
 import cn.edu.xmu.common.RPC.RpcRequestTracker;
 import cn.edu.xmu.common.RPC.RpcResponse;
 import cn.edu.xmu.common.utils.ClientCache;
+import cn.edu.xmu.common.utils.Endpoint;
 import cn.edu.xmu.common.utils.EndpointService;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.DefaultEventLoop;
@@ -15,17 +16,17 @@ import java.util.concurrent.TimeUnit;
 public class RetryFaultTolerantStrategy implements FaultTolerantStrategy{
     @Override
     public Object handler(FaultContext faultContext) throws Exception {
-        final EndpointService curEndpointService = faultContext.getCurEndpointService();
-        final List<EndpointService> endpointServices = faultContext.getEndpointServices();
-        endpointServices.remove(curEndpointService);
+        final Endpoint curEndpoint = faultContext.getCurEndpoint();
+        final List<Endpoint> endpoints = faultContext.getEndpoints();
+        endpoints.remove(curEndpoint);
 
-        if (endpointServices.isEmpty()) {
+        if (endpoints.isEmpty()) {
             throw new Exception("All servers are down, triggering fault tolerance mechanism: Fallback, no available services.");
         }
 
-        for (EndpointService endpointService : endpointServices) {
+        for (Endpoint endpoint : endpoints) {
             try {
-                final ChannelFuture channelFuture = ClientCache.ENDPOINT_CHANNEL_MAP.get(endpointService.getEndpoint());
+                final ChannelFuture channelFuture = ClientCache.ENDPOINT_CHANNEL_MAP.get(endpoint);
                 channelFuture.channel().writeAndFlush(faultContext.getRpcProtocol());
 
                 RpcFuture<RpcResponse> future = new RpcFuture<>(new DefaultPromise<>(new DefaultEventLoop()), 3000L);
@@ -35,7 +36,7 @@ public class RetryFaultTolerantStrategy implements FaultTolerantStrategy{
                 if (rpcResponse.getException() == null) {
                     return rpcResponse.getData();
                 } else {
-                    faultContext.setCurEndpointService(endpointService);
+                    faultContext.setCurEndpoint(endpoint);
                     return handler(faultContext);
                 }
             } catch (Exception e) {

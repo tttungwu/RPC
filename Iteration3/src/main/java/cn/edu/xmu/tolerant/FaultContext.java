@@ -1,15 +1,16 @@
 package cn.edu.xmu.tolerant;
 
 import cn.edu.xmu.common.RPC.RpcProtocol;
+import cn.edu.xmu.common.utils.Endpoint;
 import cn.edu.xmu.common.utils.EndpointService;
 
 import java.util.List;
 
 public class FaultContext {
 
-    private EndpointService curEndpointService;
+    private Endpoint curEndpoint;
 
-    private List<EndpointService> endpointServices;
+    private List<Endpoint> endpoints;
 
     private RpcProtocol rpcProtocol;
 
@@ -17,28 +18,28 @@ public class FaultContext {
 
     private Exception exception;
 
-    public FaultContext(EndpointService curEndpointService, List<EndpointService> endpointServices, RpcProtocol rpcProtocol, Long requestId, Exception exception) {
-        this.curEndpointService = curEndpointService;
-        this.endpointServices = endpointServices;
+    public FaultContext(Endpoint curEndpoint, List<Endpoint> endpoints, RpcProtocol rpcProtocol, Long requestId, Exception exception) {
+        this.curEndpoint = curEndpoint;
+        this.endpoints = endpoints;
         this.rpcProtocol = rpcProtocol;
         this.requestId = requestId;
         this.exception = exception;
     }
 
-    public EndpointService getCurEndpointService() {
-        return curEndpointService;
+    public Endpoint getCurEndpoint() {
+        return curEndpoint;
     }
 
-    public void setCurEndpointService(EndpointService curEndpointService) {
-        this.curEndpointService = curEndpointService;
+    public void setCurEndpoint(Endpoint curEndpoint) {
+        this.curEndpoint = curEndpoint;
     }
 
-    public List<EndpointService> getEndpointServices() {
-        return endpointServices;
+    public List<Endpoint> getEndpoints() {
+        return endpoints;
     }
 
-    public void setEndpointServices(List<EndpointService> endpointServices) {
-        this.endpointServices = endpointServices;
+    public void setEndpoints(List<Endpoint> endpoints) {
+        this.endpoints = endpoints;
     }
 
     public RpcProtocol getRpcProtocol() {
